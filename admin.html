@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração - Criar Nova Matéria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #c4170c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.1em;
+    }
+    button:hover {
+      background-color: #a00f08;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Criar Nova Matéria</h1>
+  <div class="form-container">
+    <label for="titulo">Título</label>
+    <input type="text" id="titulo" placeholder="Título da Matéria">
+
+    <label for="imagem">Escolher Imagem</label>
+    <input type="file" id="imagem" accept="image/*">
+
+    <label for="autor">Autor</label>
+    <input type="text" id="autor" placeholder="Seu nome">
+
+    <label for="data">Data</label>
+    <input type="date" id="data">
+
+    <label for="marcador">Marcador</label>
+    <input type="text" id="marcador" placeholder="Categoria (ex: Ciência)">
+
+    <label for="conteudo">Conteúdo da Matéria</label>
+    <textarea id="conteudo" placeholder="Texto completo da matéria"></textarea>
+
+    <button onclick="gerarMateria()">Criar Matéria</button>
+  </div>
+
+  <script>
+    function gerarMateria() {
+      const titulo = document.getElementById('titulo').value;
+      const autor = document.getElementById('autor').value;
+      const data = document.getElementById('data').value;
+      const marcador = document.getElementById('marcador').value;
+      const conteudo = document.getElementById('conteudo').value;
+      const imagemInput = document.getElementById('imagem');
+      
+      if (!titulo || !autor || !data || !marcador || !conteudo || !imagemInput.files[0]) {
+        alert("Por favor, preencha todos os campos e adicione uma imagem!");
+        return;
+      }
+
+      // Cria o arquivo para a imagem
+      const imagemFile = imagemInput.files[0];
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const imagemBase64 = reader.result;
+
+        const nomeArquivo = titulo.toLowerCase().replace(/\s+/g, '-') + '.html';
+
+        const htmlMateria = `<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${titulo}</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f9f9f9; line-height: 1.6; }
+    header { background: #c4170c; color: white; padding: 20px; text-align: center; }
+    img { width: 100%; margin: 20px 0; }
+    .meta { color: #777; font-size: 14px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <header><h1>${titulo}</h1></header>
+  <div class="meta">Por ${autor} | ${data} | Marcador: ${marcador}</div>
+  <img src="${imagemBase64}" alt="${titulo}">
+  <p>${conteudo}</p>
+</body>
+</html>`;
+
+        const blob = new Blob([htmlMateria], { type: 'text/html' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomeArquivo;
+        link.click();
+
+        alert("Matéria gerada com sucesso! O arquivo HTML foi baixado.");
+      };
+      reader.readAsDataURL(imagemFile); // Lê a imagem e converte para Base64
+    }
+  </script>
+</body>
+</html>
